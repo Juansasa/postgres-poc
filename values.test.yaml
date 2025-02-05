@@ -1,0 +1,9 @@
+cluster:
+  import:
+    source:
+      host: rhbk-primary.rhbk.svc
+      user: rhbk
+      dbname: keycloak
+      password:
+        name: rhbk-pguser-rhbk
+        key: password

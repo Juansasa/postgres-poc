@@ -1,0 +1,15 @@
+{{- if .Values.backup.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ include "stakater-cloudnative-pg.fullname" . }}-backup
+  labels:
+    {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule }}
+  immediate: {{ .Values.backup.immediate }}
+  backupOwnerReference: self
+  method: volumeSnapshot
+  cluster:
+    name: {{ include "stakater-cloudnative-pg.fullname" . }}-cluster
+{{- end }}

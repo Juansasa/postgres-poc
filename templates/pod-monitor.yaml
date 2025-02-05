@@ -1,0 +1,14 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "stakater-cloudnative-pg.fullname" . }}-monitor
+  labels:
+    {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}
+  podMetricsEndpoints:
+    - port: metrics
+{{- end }}

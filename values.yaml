@@ -1,3 +1,24 @@
-postgres:
-  cluster:
-    instances: 3
+monitoring:
+  enabled: false
+pooler:
+  enabled: false
+  instances: 3
+  size: 10
+  connections:
+    max: 1000
+backup:
+  enabled: false
+  schedule: "0 0 0 * * *"
+  immediate: true
+cluster:
+  instances: 3
+  storage:
+    size: 1Gi
+  import:
+    source:
+      host: <host-svc>
+      user: <user>
+      dbname: <dbname>
+      password:
+        name: <secret_name>
+        key: <password_key>
