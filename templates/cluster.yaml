@@ -8,6 +8,11 @@ spec:
   instances: 1
   storage:
     size: {{ .Values.cluster.storage.size }}
+    #resizeInUseVolumes: True
+  walStorage:
+    size: {{ .Values.cluster.storage.size }}
+  backup:
+    retentionPolicy: "60d"
   postgresql:
     parameters:
       pgaudit.log: "all, -misc"
@@ -16,7 +21,8 @@ spec:
       pgaudit.log_relation: "on"
   bootstrap:
     initdb:
-      owner: rhbk
+      owner: {{ .Values.cluster.primary.user }}
+      database: {{ .Values.cluster.primary.database }}
       import:
         type: microservice
         databases:

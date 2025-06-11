@@ -12,6 +12,9 @@ backup:
   immediate: true
 cluster:
   instances: 3
+  primary:
+    user: <primary_user>
+    database: <primary_database>
   storage:
     size: 1Gi
   import:

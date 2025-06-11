@@ -1,4 +1,9 @@
+fullnameOverride: cpg
 cluster:
+  instance: 1
+  primary:
+    user: rhbk
+    database: keycloak
   import:
     source:
       host: rhbk-primary.rhbk.svc

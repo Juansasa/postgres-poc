@@ -23,8 +23,8 @@ version: 0.1.0
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
 
-dependencies:
-  - name: cluster
-    repository: https://cloudnative-pg.github.io/charts
-    alias: postgres
-    version: 0.2.0
+#dependencies:
+#  - name: cluster
+#    repository: https://cloudnative-pg.github.io/charts
+#    alias: postgres
+#    version: 0.2.0
