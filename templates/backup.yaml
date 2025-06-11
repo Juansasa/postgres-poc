@@ -8,8 +8,10 @@ metadata:
 spec:
   schedule: {{ .Values.backup.schedule }}
   immediate: {{ .Values.backup.immediate }}
-  backupOwnerReference: self
-  method: volumeSnapshot
   cluster:
     name: {{ include "stakater-cloudnative-pg.fullname" . }}-cluster
+  {{- if .Values.backup.storage }}
+  storage:
+    {{- toYaml .Values.backup.storage | nindent 4 }}
+  {{- end }}
 {{- end }}

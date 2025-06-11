@@ -1,34 +1,39 @@
-kind: Cluster
 apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
   name: {{ include "stakater-cloudnative-pg.fullname" . }}-cluster
   labels:
     {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
 spec:
-  instances: 1
+  instances: {{ .Values.cluster.instances }}
   storage:
     size: {{ .Values.cluster.storage.size }}
-    #resizeInUseVolumes: True
   walStorage:
     size: {{ .Values.cluster.storage.size }}
   backup:
-    retentionPolicy: "60d"
+    {{- if .Values.backup.enabled }}
+    schedule: {{ .Values.backup.schedule }}
+    {{- end }}
   postgresql:
     parameters:
       pgaudit.log: "all, -misc"
-      pgaudit.log_catalog: "off"
-      pgaudit.log_parameter: "on"
-      pgaudit.log_relation: "on"
+      max_connections: "1000"
+      shared_buffers: "256MB"
+      effective_cache_size: "768MB"
   bootstrap:
     initdb:
       owner: {{ .Values.cluster.primary.user }}
       database: {{ .Values.cluster.primary.database }}
+      {{- if .Values.cluster.import.source }}
       import:
         type: microservice
         databases:
           - {{ .Values.cluster.import.source.dbname }}
         source:
           externalCluster: import-db
+      {{- end }}
+  {{- if .Values.cluster.import.source }}
   externalClusters:
     - name: import-db
       connectionParameters:
@@ -38,3 +43,4 @@ spec:
       password:
         name: {{ .Values.cluster.import.source.password.name }}
         key: {{ .Values.cluster.import.source.password.key }}
+  {{- end }}

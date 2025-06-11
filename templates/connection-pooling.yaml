@@ -1,4 +1,13 @@
 {{- if .Values.pooler.enabled }}
+{{- if not .Values.pooler.instances }}
+{{- fail "pooler.instances is required when pooler is enabled" }}
+{{- end }}
+{{- if not .Values.pooler.size }}
+{{- fail "pooler.size is required when pooler is enabled" }}
+{{- end }}
+{{- if not .Values.pooler.connections.max }}
+{{- fail "pooler.connections.max is required when pooler is enabled" }}
+{{- end }}
 apiVersion: postgresql.cnpg.io/v1
 kind: Pooler
 metadata:
@@ -14,11 +23,22 @@ spec:
     metadata:
       labels:
         {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}-pooler
-    spec:
-      type: LoadBalancer
   pgbouncer:
-    poolMode: session
     parameters:
       max_client_conn: "{{ .Values.pooler.connections.max }}"
-      default_pool_size: "{{ .Values.pooler.size }}"
+      default_pool_size: "{{ .Values.pooler.parameters.default_pool_size }}"
+      min_pool_size: "{{ .Values.pooler.parameters.min_pool_size }}"
+      max_db_connections: "{{ .Values.pooler.parameters.max_db_connections }}"
+      max_user_connections: "{{ .Values.pooler.parameters.max_user_connections }}"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  podTemplate:
+    metadata:
+      labels:
+        {{- include "stakater-cloudnative-pg.labels" . | nindent 4 }}-pooler
 {{- end }}

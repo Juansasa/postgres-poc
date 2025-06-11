@@ -1,9 +1,10 @@
-fullnameOverride: cpg
 cluster:
-  instance: 1
+  instances: 1
   primary:
     user: rhbk
     database: keycloak
+  storage:
+    size: "10Gi"
   import:
     source:
       host: rhbk-primary.rhbk.svc

@@ -1,27 +1,87 @@
+# Monitoring configuration
 monitoring:
+  # Enable monitoring (required for production)
   enabled: false
+  # Additional labels for the PodMonitor
+  additionalLabels: {}
+  # Prometheus PodMonitor configuration
+  podMonitor:
+    # Relabeling configurations
+    relabelings: []
+    # Metric relabeling configurations
+    metricRelabelings: []
+
+# Connection pooling configuration
 pooler:
+  # Enable connection pooling (recommended for production)
   enabled: false
+  # Number of pooler instances (should match cluster instances for HA)
   instances: 3
-  size: 10
+  # Default pool size per instance
+  size: 20
   connections:
-    max: 1000
+    # Maximum number of client connections
+    max: 100
+
+# Backup configuration
 backup:
+  # Enable/disable automated backups
   enabled: false
-  schedule: "0 0 0 * * *"
+  # Backup schedule in cron format
+  # Examples:
+  # - "0 0 * * *"     # Daily at midnight
+  # - "0 */6 * * *"   # Every 6 hours
+  # - "0 0 * * 0"     # Weekly on Sunday
+  schedule: "0 0 * * *"  # Daily at midnight
+  # Take backup immediately after creation
   immediate: true
+  storage:
+    # Configure backup storage location (required if backup enabled)
+    # Supported formats:
+    # - s3://bucket-name/path/to/backups
+    # - s3://bucket-name/backups/cluster-name
+    # Example: s3://my-db-backups/production/postgres
+    location: ""
+    s3Credentials:
+      # Reference to Kubernetes secret containing S3 credentials
+      # The secret should be created before enabling backups
+      # Example secret creation:
+      # kubectl create secret generic postgres-backup-s3 \
+      #   --from-literal=accessKeyId=YOUR_ACCESS_KEY \
+      #   --from-literal=secretAccessKey=YOUR_SECRET_KEY
+      accessKeyId:
+        name: ""  # Name of the Kubernetes secret containing S3 credentials
+        key: "accessKeyId"  # Key in the secret containing the access key
+      secretAccessKey:
+        name: ""  # Name of the Kubernetes secret containing S3 credentials
+        key: "secretAccessKey"  # Key in the secret containing the secret key
+
+# Cluster configuration
 cluster:
+  # Number of PostgreSQL instances (recommended: 3 for HA)
   instances: 3
   primary:
-    user: <primary_user>
-    database: <primary_database>
+    # Primary database user (required)
+    user: "postgres"
+    # Primary database name (required)
+    database: "postgres"
   storage:
-    size: 1Gi
+    # Storage size for data volume (required)
+    size: "100Gi"
   import:
+    # Optional: Import data from external source
+    # This section allows you to import data from an external PostgreSQL database
+    # into your CloudNativePG cluster during initialization
     source:
-      host: <host-svc>
-      user: <user>
-      dbname: <dbname>
+      # Hostname or IP address of the source PostgreSQL database
+      host: ""
+      # Username for connecting to the source database
+      user: ""
+      # Name of the source database to import from
+      dbname: ""
+      # Password configuration for source database authentication
       password:
-        name: <secret_name>
-        key: <password_key>
+        # Name of the Kubernetes secret containing the password
+        name: ""
+        # Key in the secret that contains the password value
+        key: ""
