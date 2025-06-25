@@ -9,7 +9,8 @@ cluster:
     source:
       host: rhbk-primary.rhbk.svc
       user: rhbk
-      dbname: keycloak
+      databases:
+        - keycloak
       password:
         name: rhbk-pguser-rhbk
         key: password
