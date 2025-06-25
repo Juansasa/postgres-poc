@@ -25,13 +25,17 @@ spec:
     initdb:
       owner: {{ .Values.cluster.primary.user }}
       database: {{ .Values.cluster.primary.database }}
-      {{- if .Values.cluster.import.source }}
+      {{- if and .Values.cluster.import.source .Values.cluster.import.source.databases }}
       import:
-        type: microservice
+        type: {{ .Values.cluster.import.source.type }}
+        {{- if eq .Values.cluster.import.source.type "microservice" }}
         databases:
-          - {{ .Values.cluster.import.source.dbname }}
+          {{- range .Values.cluster.import.source.databases }}
+          - {{ . }}
+          {{- end }}
         source:
           externalCluster: import-db
+        {{- end }}
       {{- end }}
   {{- if .Values.cluster.import.source }}
   externalClusters:
@@ -39,7 +43,7 @@ spec:
       connectionParameters:
         host: {{ .Values.cluster.import.source.host }}
         user: {{ .Values.cluster.import.source.user }}
-        dbname: {{ .Values.cluster.import.source.dbname }}
+        dbname: postgres
       password:
         name: {{ .Values.cluster.import.source.password.name }}
         key: {{ .Values.cluster.import.source.password.key }}
